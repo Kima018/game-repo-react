@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/memo-game.iml" filepath="$PROJECT_DIR$/.idea/memo-game.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/game-repo-react.iml" filepath="$PROJECT_DIR$/.idea/game-repo-react.iml" />
     </modules>
   </component>
 </project>
