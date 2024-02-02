@@ -1,8 +1,8 @@
 import {data} from "../data";
 import Card from "./Card";
 import '../style/GameBoard.css'
+import '../style/Header.css'
 import {useEffect, useState} from "react";
-
 
 function shuffle(array) {
     const length = array.length;
@@ -19,43 +19,85 @@ function shuffle(array) {
 export default function GameBoard() {
 
     const [cards, setCards] = useState(shuffle.bind(null, data.concat(data)))
-    const [openCards, setOpenCards] = useState([])
-    const [matchedCards, setMatchedCards] = useState([])
+    const [gameStats, setGameStats] = useState({
+        openCards: [], matchedCards: [], seconds: 0, isGameActive: false,
+    })
+    const handleRestartGame = () => {
+        setGameStats({openCards: [], matchedCards: [], seconds: 0, isGameActive: false})
+        setCards(shuffle.bind(null, data.concat(data)))
+    }
     const handleCardClick = (index) => {
-        if (openCards.length < 2) {
-            setOpenCards((prev) => [...prev, index]);
+        if (gameStats.openCards.length < 2) {
+            setGameStats((prevState) => ({
+                ...prevState, openCards: [index, ...prevState.openCards]
+            }));
+        }
+        if (!gameStats.isGameActive) {
+            setGameStats((prevStats) => ({
+                ...prevStats, isGameActive: true
+            }))
         }
     }
-
     const checkCardMatch = () => {
-        const [firstCard, secondCard] = openCards
+        const [firstCard, secondCard] = gameStats.openCards
         if (cards[firstCard].name === cards[secondCard].name) {
             setTimeout(() => {
-                setMatchedCards(prevState => [firstCard, secondCard, ...prevState])
-
+                setGameStats(prevState => ({
+                    ...prevState, matchedCards: [firstCard, secondCard, ...prevState.matchedCards]
+                }))
             }, 500)
         }
     }
 
     useEffect(() => {
-        if (openCards.length === 2) {
+        if (gameStats.openCards.length === 2) {
             checkCardMatch()
             setTimeout(() => {
-                setOpenCards([])
-            }, 1000)
+                setGameStats((prevState) => ({
+                    ...prevState, openCards: []
+                }))
+            }, 800)
         }
-    }, [openCards])
+    }, [gameStats.openCards.length])
+
+    useEffect(() => {
+        if (gameStats.matchedCards.length === cards.length) {
+            setTimeout(() => {
+                console.log('winneeer')
+            }, 500)
+        }
+    }, [gameStats.matchedCards.length])
 
 
     const checkIsPicked = (index) => {
-        return Boolean(openCards.includes(index))
+        return Boolean(gameStats.openCards.includes(index))
     }
     const checkIsMatched = (index) => {
-        return Boolean(matchedCards.includes(index))
+        return Boolean(gameStats.matchedCards.includes(index))
     }
+
+
+    useEffect(() => {
+        let interval
+        if (gameStats.isGameActive) {
+            interval = setInterval(() => {
+                setGameStats((prevStats) => ({
+                    ...prevStats, seconds: prevStats.seconds + 1
+                }))
+            }, 1000)
+
+        }
+        return () => {
+            clearInterval(interval)
+        }
+    }, [gameStats.isGameActive])
 
 
     return <div className='container'>
+        <header className='header'>
+            <button onClick={() => handleRestartGame()}>restart</button>
+            <p>{gameStats.seconds}</p>
+        </header>
         <div className='game-board'>
             {cards.map((item, index) => {
                 return <Card

@@ -1,5 +1,5 @@
 import '../style/Card.css'
-import classNames from "classnames";
+
 
 export default function Card({onClick,isPicked,isMatched, cardLogo ,index}) {
     const handleClick = () => {
