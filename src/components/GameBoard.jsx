@@ -30,7 +30,10 @@ export default function GameBoard() {
     const checkCardMatch = () => {
         const [firstCard, secondCard] = openCards
         if (cards[firstCard].name === cards[secondCard].name) {
-            setMatchedCards(prevState => [firstCard, secondCard, ...prevState])
+            setTimeout(() => {
+                setMatchedCards(prevState => [firstCard, secondCard, ...prevState])
+
+            }, 500)
         }
     }
 
@@ -39,8 +42,7 @@ export default function GameBoard() {
             checkCardMatch()
             setTimeout(() => {
                 setOpenCards([])
-            },1000)
-
+            }, 1000)
         }
     }, [openCards])
 
@@ -49,30 +51,23 @@ export default function GameBoard() {
         return Boolean(openCards.includes(index))
     }
     const checkIsMatched = (index) => {
-
         return Boolean(matchedCards.includes(index))
     }
 
 
-    return <div className='game-board'>
-        {cards.map((item, index) => {
-            return <Card
-                key={index}
-                index={index}
-                cardLogo={item.img}
-                onClick={handleCardClick}
-                isPicked={checkIsPicked(index)}
-                isMatched={checkIsMatched(index)}
-
-            />
-        })}
+    return <div className='container'>
+        <div className='game-board'>
+            {cards.map((item, index) => {
+                return <Card
+                    key={index}
+                    index={index}
+                    cardLogo={item.img}
+                    onClick={handleCardClick}
+                    isPicked={checkIsPicked(index)}
+                    isMatched={checkIsMatched(index)}
+                />
+            })}
+        </div>
     </div>
-}
 
-// key={index}
-// card={card}
-// index={index}
-// isDisabled={shouldDisableAllCards}
-// isInactive={checkIsInactive(card)}
-// isFlipped={checkIsFlipped(index)}
-// onClick={handleCardClick}
+}
