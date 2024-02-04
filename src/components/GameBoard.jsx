@@ -1,9 +1,9 @@
 import {data} from "../data";
 import Card from "./Card";
 import '../style/GameBoard.css'
-import '../style/Header.css'
 import {useEffect, useState} from "react";
 import WinModal from "./WinModal";
+import Header from "./Header";
 
 function shuffle(array) {
     const length = array.length;
@@ -44,7 +44,9 @@ export default function GameBoard() {
     const handleRestartGame = () => {
         checkStoredData()
         setGameStats(initialGameStats)
-        setCards(shuffle.bind(null, data.concat(data)))
+        setTimeout(()=>{
+            setCards(shuffle.bind(null, data.concat(data)))
+        },700)
         setHasWinner(false)
     }
 
@@ -129,10 +131,7 @@ export default function GameBoard() {
     }, [gameStats.isGameActive])
 
     return <div className='container'>
-        <header className='header'>
-            <button onClick={() => handleRestartGame()}>restart</button>
-            <p>{gameStats.seconds}</p>
-        </header>
+        <Header handleRestartGame={() => handleRestartGame()} headerTimer={gameStats.seconds} currMoves={gameStats.moves}/>
         <div className='game-board'>
             {cards.map((item, index) => {
                 return <Card

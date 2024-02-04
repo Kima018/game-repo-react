@@ -10,3 +10,9 @@
     color: white;
     font-style: oblique;
 }
+.win-modal button{
+    padding: 8px 16px;
+    background: linear-gradient(to right, #61dafb,#f9f5e3);
+    border: none;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+}

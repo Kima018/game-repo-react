@@ -7,4 +7,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 2rem;
+    font:1.2rem "Fira Sans", sans-serif;
+}
+.header button{
+    padding: 8px 16px;
+   background: linear-gradient(to right, #61dafb,#f9f5e3);
+    border: none;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 }
