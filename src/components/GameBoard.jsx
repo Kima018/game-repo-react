@@ -17,7 +17,23 @@ function shuffle(array) {
     return array;
 }
 
-const initialGameStats = {openCards: [], matchedCards: [], seconds: 0, isGameActive: false,moves:0,bestScore:0}
+let initialGameStats = {
+    openCards: [],
+    matchedCards: [],
+    seconds: 0,
+    isGameActive: false,
+    moves: 0,
+    bestScore: 0
+}
+const checkStoredData = () => {
+    const tempData = JSON.parse(localStorage.getItem('Data'))
+    if (tempData) {
+        initialGameStats = tempData
+    } else {
+        localStorage.setItem('Data', JSON.stringify(initialGameStats))
+    }
+}
+checkStoredData()
 
 
 export default function GameBoard() {
@@ -25,11 +41,13 @@ export default function GameBoard() {
     const [gameStats, setGameStats] = useState(initialGameStats)
     const [hasWinner, setHasWinner] = useState(false)
 
-
     const handleRestartGame = () => {
-        setGameStats({openCards: [], matchedCards: [], seconds: 0, isGameActive: false,moves: 0})
+        checkStoredData()
+        setGameStats(initialGameStats)
         setCards(shuffle.bind(null, data.concat(data)))
+        setHasWinner(false)
     }
+
     const handleCardClick = (index) => {
         if (gameStats.openCards.length < 2) {
             setGameStats((prevState) => ({
@@ -39,8 +57,8 @@ export default function GameBoard() {
             }));
         }
         if (!gameStats.isGameActive) {
-            setGameStats((prevStats) => ({
-                ...prevStats, isGameActive: true
+            setGameStats((prevState) => ({
+                ...prevState, isGameActive: true
             }))
         }
     }
@@ -55,7 +73,16 @@ export default function GameBoard() {
             }, 500)
         }
     }
-
+    const setBestScore = (currMoves) => {
+        if (gameStats.moves / 2 < gameStats.bestScore || gameStats.bestScore === 0) {
+            setGameStats(prevState => ({
+                ...prevState,
+                bestScore: prevState.moves / 2
+            }))
+            let tempData = {...initialGameStats, bestScore: gameStats.moves / 2}
+            localStorage.setItem('Data', JSON.stringify(tempData))
+        }
+    }
     useEffect(() => {
         if (gameStats.openCards.length === 2) {
             checkCardMatch()
@@ -69,12 +96,10 @@ export default function GameBoard() {
 
     useEffect(() => {
         if (gameStats.matchedCards.length === cards.length) {
+            setBestScore()
             setTimeout(() => {
                 setHasWinner(true)
-                setGameStats((prevState) =>({
-                    ...prevState,
-                    bestScore: prevState.moves / 2
-                }))
+                setGameStats(prevState => ({...prevState, isGameActive: false}))
             }, 500)
         }
     }, [gameStats.matchedCards.length])
@@ -92,8 +117,8 @@ export default function GameBoard() {
         let interval
         if (gameStats.isGameActive) {
             interval = setInterval(() => {
-                setGameStats((prevStats) => ({
-                    ...prevStats, seconds: prevStats.seconds + 1
+                setGameStats((prevState) => ({
+                    ...prevState, seconds: prevState.seconds + 1
                 }))
             }, 1000)
 
@@ -120,7 +145,7 @@ export default function GameBoard() {
                 />
             })}
         </div>
-        {hasWinner ? <WinModal score={gameStats.bestScore}/> : undefined}
+        {hasWinner ? <WinModal score={gameStats.bestScore} handleRestart={handleRestartGame} time={gameStats.seconds
+        }/> : undefined}
     </div>
-
 }
